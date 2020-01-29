@@ -34,7 +34,12 @@ Social network for users to share pictures with their friends
 	<li> Each picture post has a time of posting available <br /></li>
 </ul>
 
-
+<h2>User stories</h2>
+<ol>
+<li>An InstaPic user should be able to post pictures from their computer so that others would be able to see the pictures.</li>
+<li>An InstaPic user should be able to follow another user so that they can receive notifications when the followed user posts a new picture.</li>
+<li>An InstaPic user should be able to comment on pictures so that others can see their comments.</li>
+</ol>
 
 
     
