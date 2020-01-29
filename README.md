@@ -42,4 +42,11 @@ Social network for users to share pictures with their friends
 </ol>
 
 
+
+<h4> Additional features: </h4>
+ <ul>
+ <li> InstaPic users should be able to like photos of friends<br /></li>
+ <li>  InstaPic users can view the timeline in terms of when the photos were uploaded<br /></li>
+ </ul>
+
     
