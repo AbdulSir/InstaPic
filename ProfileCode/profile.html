@@ -4,11 +4,14 @@
 <title>CSS Website Layout</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="profile.css">
 <style>
 * {
   box-sizing: border-box;
 }
 </style>
+
+
 </head>
 <body>
 
@@ -22,13 +25,14 @@
 	 <div class="profile-image">
 
 				<img src="https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces" alt="">
-			</div> 
+			</div>
   </div>
 	<div class="column">
       <div class="row">
       <div class="sidecolumn" ></div>
       <div class="equalcolumn"><a href="#">Jane Janette Doe</a></div>
-      <div class="sidecolumn"><button class="btn follow">Follow</button></div>
+      <div class="sidecolumn">
+          <button id="follow">Follow</button></div>
       <botton>
       <div class="sidecolumn" ></div>
       </div>
@@ -42,29 +46,40 @@
       <div class="equalcolumn"><a href="#">158</a></div>
       <div class="equalcolumn"><a href="#">80</a></div>
       </div>
- 
+
    </div>
   <div class="sidecolumn" >
   </div>
-  
+
 </div>
 
 <div class="row">
   <div class="sidecolumn">
   </div>
-  
+
   <div class="column">
-      
+
       <img src="https://i0.wp.com/goodtourismblog.com/wp-content/uploads/2019/12/Bow_Fiddle_Rock_Portknockie_Moray_Scotland.jpg?fit=656%2C369&ssl=1" alt="Snow" style="width:200px;height:250px;"
 >
       <img src="https://img.huffingtonpost.com/asset/5cd4e79720000032009632e4.jpeg?ops=scalefit_720_noupscale" alt="Forest" style="width:200px;height:250px;"
 >
       <img src="https://improvephotography.com/wp-content/uploads/2017/07/DSCF5660-Edit-1.jpg" alt="Mountains" style="width:200px;height:250px;"
-> 
-   
+>
+
   </div>
   <div class="sidecolumn" ></div>
 </div>
+
+
+
+<!--Follow button will be changed to following whenever a user clicks on the button follow.-->
+<script>
+document.getElementById("follow").addEventListener("click", myFunction);
+
+function myFunction() {
+  document.getElementById("follow").innerHTML = "Following";
+}
+</script>
 
 </body>
 </html>
