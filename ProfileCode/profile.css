@@ -11,6 +11,7 @@ body {
   text-align: center;
 
 }
+
 .logo {
 	float: left;
 	border-image-width: 30;
@@ -150,7 +151,9 @@ input[type=text]:focus {
   cursor: pointer;
   display: inline-block;
 }
-.follow {color: white;}
+
+/*follow button which is blue, willl turn to following when clicked*/
+#follow {color: blue;}
 
 
 @media screen and (max-width: 600px) {
