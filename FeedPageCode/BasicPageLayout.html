@@ -1,4 +1,38 @@
 <html>
+	
+
+<script>
+
+
+function myFunction() {       //function creates a default <img>
+
+  
+
+  var x = document.createElement("img");
+  x.setAttribute("src", "default.jpeg");
+  x.setAttribute("width", "100%");
+  x.setAttribute("alt", "default");
+  document.getElementById("images").appendChild(x);
+ 
+ 
+  
+}
+
+
+window.addEventListener('load', function() {              //in window when load happens
+
+  document.querySelector('input[type="file"]').addEventListener('change', function() {  //in document when file change happens
+      
+      if (this.files && this.files[0]) {                                                //if this file exists
+          var img = document.querySelector("img[src='default.jpeg']");  // $('img')[0]                      //var img represents the first <img> tag of the document
+          img.src = URL.createObjectURL(this.files[0]); // set src to blob url          //the source of the image is then URL.createObjectURL(this.files[0])
+          
+      } else {document.querySelector("img[src='default.jpeg']").remove()}            //remove default if its not used
+      
+  });
+  
+});
+</script>
 
 
 
