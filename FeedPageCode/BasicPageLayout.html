@@ -55,10 +55,58 @@ window.addEventListener('load', function() {              //in window when load 
 
 	</header>
 
-	<section class="container">
+	<section class="container" id="container">
+
+ 		<input type="file" multiple="false" accept="image/*" id="finput" onclick="myFunction()" class="custom-file-input"/>
+
 		<div class="card">
+		 <div class="card-header">
+		  <div class="profile-img">
+
+		  </div>
+		  <div class="profile-info">
+		    <div class="name">Username</div>
+		    <div class="location">New York, New York</div>
+		  </div>
+		  <div class="time">
+		     1hr
+		  </div>
+		 </div>
+
+		 <div class="content">
+		   <img src="m1.png">
+		 </div>
+		<div id="images">
+		</div>
+
+		<div class="card-footer">
+		  <div class="likes">
+			32 likes
+		  </div>
+
+		  <div class="description">
+		   <p><span>Username1</span> Me describing the picture</p>
+		  </div>
+
+		  <div class="comments">
+		   <p><span>Username2</span> Me commenting the picture</p>
+		  </div>
+
+		  <form class="form">
+			<div class="add-like">
+			 <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+			</div>
+
+			<div class="add-comment">
+			 <input type="text">
+			</div>
+		  </form>
+		</div>
+
 		</div>
 	</section>
+
+</section>
 
 </body>
 </html>
