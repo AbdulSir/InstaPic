@@ -32,3 +32,15 @@ def ajaxsavephoto(request):
 	ajax = AjaxSavePhoto(request.POST, request.user)
 	context = { 'ajax_output': ajax.output() }
 	return render(request, 'ajax.html', context)
+
+#creating main feed
+def ajaxphotofeed(request):  
+    ajax = AjaxPhotoFeed(request.GET, request.user)
+    context = { 'ajax_output': ajax.output() }
+    return render(request, 'ajax.html', context)
+
+#creating profile feed
+def ajaxprofilefeed(request):
+	ajax = AjaxProfileFeed(request.GET, request.user)
+	context = { 'ajax_output': ajax.output() }
+	return render(request, 'ajax.html', context)
