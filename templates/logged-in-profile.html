@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<!-- LOGGED-IN PERSONAL PROFILE VIEW -->
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instapic</title>
+    <link rel="stylesheet" href="{% static "assets/bootstrap/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "assets/fonts/font-awesome.min.css" %}">
+    <link rel="stylesheet" href="{% static "assets/css/Login-Form-Clean.css" %}">
+    <link rel="stylesheet" href="{% static "assets/css/styles.css" %}">
+    <link rel="stylesheet" href="{% static "assets/fonts/ionicons.min.css" %}">
+</head>
+
+<body>
+        <!-- Allow to view uploaded photos on click -->
+        <div class="photo-viewer">
+                <div class="img-div">
+                        <div class="header">
+                                <img class="img-circle" src="{{ ProfilePic }}"><label>/{{whosprofile}}</label></div>
+                                <img style="max-height: 500px" id="detailphoto" src="">
+                                <div class="header">
+                                        <a id="likephoto" href="javascript:void(0)" data-postid=""><i class="fa fa-heart-o"></i></a></div><div class="more-section"><label><span id="likes"></span> Likes</label>
+                                                <p><strong>/{{whosprofile}} </strong><span id="cap"></span></p>
+                                        </div>
+                                </div>
+        </div>
+        
+        <!-- Allow to close photo viewer onclick of the screen -->
+        <div class="overlay"></div>
+ 
+        <!-- Header section of profile-->
+        <div class="container-fluid header-top">
+            <div class="col-md-12" style="padding:0px;">
+		    <!--MENU -->
+		    
+		    <!--Logo -->
+                    <div class="top-menu-logo"><a href="/"><img src="{% static 'assets/img/logo1.jpg' %}" class="center-block" style="height:100px;width:150px;margin-top:10px;margin-bottom:10px;"></a>
+		    <!--Menu Buttons -->	
+                    <div class="menu-buttons">
+                         <!--Upload button using uploadcare -->
+                        <button class="btn btn-default" type="button" id="upload-but"><i class="glyphicon glyphicon-upload"></i></button>
+
+			<!--Profile button -->
+                        <a href="/{{ logged_in_as }}"><button class="btn btn-default" type="button" id="profile-but"><i class="glyphicon glyphicon-user"></i></button></a>
+			
+			<!--Log out button -->			
+			<form method="POST" action="/logout/">
+				{% csrf_token %}
+				<input type="submit" value="Logout">
+			</form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    <!--Profile Image Container (Tutorial Code - UploadCare ) -->
+    <div class="container img-container">
+            <div id="upload-div">
+                    <div class="img-div" style="position: relative; margin-bottom: 0px">
+                        <div class="header"><img class="img-circle" src="{{ ProfilePic }}">
+                            <label>/{{ logged_in_as }}</label>
+                        </div>
+                        <div class="empty-upload-container">
+                                <div style="width: 100%; height: 300px">
+                            <!-- <h1>Upload an Image</h1> -->
+                            <h1><div class="uploader-grey-button image-preview">
+              <input type="hidden" role="uploadcare-uploader" data-clearable="" data-images-only="">
+      </div></h1>
+                    </div>
+                    </div>
+                    <div id="caption-div" class="upload-photo-options">
+                        <h1>Add a caption</h1>
+                        <input type="text" maxlength="140" style="width:100%;border:none;font-size:16px;height:48px;outline:none;padding:0px 10px;" id="captionbox" placeholder="Type your caption here ...">
+                    </div>
+                    <div id="filter-div" class="upload-photo-options" style="height: 150px">
+                        <h1>Choose a Filter</h1>
+                        <div style="width:100%;overflow-x:scroll;">
+                                <div style="width:100%;overflow-x:scroll;">
+                                    <div style="height:100px;overflow:hidden;min-width:160%;">
+                                        <div class="effect"><img src="" class="grayscale">
+                                            <label>Grayscale </label>
+                                        </div>
+                                        <div class="effect"><img src="" class="invert">
+                                            <label>Invert </label>
+                                        </div>
+                                        <div class="effect"><img src="" class="blur">
+                                            <label>Blur </label>
+                                        </div>
+                                        <div class="effect"><img src="" class="flip">
+                                            <label>Flip </label>
+                                        </div>
+                                        <div class="effect"><img src="" class="mirror">
+                                            <label>Mirror </label>
+                                        </div>
+                                        <div class="effect"><img src="">
+                                            <label>Sharp </label>
+                                        </div>
+                                        <div class="effect"><img src="">
+                                            <label>Enhance </label>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="upload-options-disabled"></div>
+                    
+		    <div class="hidden-xs more-section"><a href="javascript:void(0)" id="caption-but" class="upload-options caption-but"><i class="fa fa-comments-o"></i> Add a caption</a><a href="javascript:void(0)" id="filter-but" class="upload-options filter-but"><i class="icon ion-android-options"></i> Add a filter</a>
+                        <a
+                        href="javascript:void(0)" id="rotate-but" class="upload-options rotate-but"><i class="fa fa-rotate-right"></i> Rotate photo</a>
+                            <button class="save-photo btn btn-primary btn-block upload-button" type="submit">Save Photo</button>
+                    </div>
+
+                    <div class="hidden-sm hidden-md hidden-lg more-section"><a href="javascript:void(0)" class="upload-options small caption-but"><i class="fa fa-comments-o"></i></a><a href="javascript:void(0)" class="upload-options small filter-but" style="padding:10px;"><i class="icon ion-android-options"></i></a><a href="javascript:void(0)" class="upload-options small rotate-but"
+                        style="padding:13px;"><i class="fa fa-rotate-right"></i></a>
+                        <button class="save-photo btn btn-primary btn-block upload-button" type="submit">Save</button>
+                    </div>
+                    </div>
+            </div>
+
+    </div>
+
+    
+    <!--Contain User Uploaded Images -->
+    <div class="container"><img class="img-circle center-block" id="profilepic" src="{{ ProfilePic }}" width="140" height="140">
+        <h1 class="text-center">{{ whosprofile }} <button id="follow" class="btn btn-default btn-primary follow-button" type="button">{{ following }}</button></h1>
+        <div class="col-md-12 profile-imgs">
+	    
+	    <!-- Images are appended here using getPosts() function -->            
+	    <div id="loadposts">
+            </div>
+
+        </div>
+    </div>
+    </html>
