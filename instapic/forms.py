@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.db.models import F
-from instapic.models import User
+from instapic.models import User, Photo
 from django.contrib.auth.hashers import make_password, check_password
 from urllib.request import urlopen
 from random import randint
@@ -97,5 +97,42 @@ class AjaxLogin(Ajax):
 		return u, self.success("User logged in!")  #return user with message
 
 
+class AjaxSavePhoto(Ajax):
 
+	def validate(self):  #function that validates the saving of a photo
+		try:
+			self.url = self.args[0]["url"]
+			self.baseurl = self.args[0]["baseurl"]
+			self.caption = self.args[0]["caption"]
+		except Exception as e:               #if photo has no urls and no caption then throw exception
+			return self.error("Malformed request, did not process.")
+
+		if self.user == "NL":          #check if request came from logged in user
+			return self.error("Unauthorised request.")
+
+		if len(self.caption) > 140:    #check length of caption
+				return self.error("Caption must be 140 characters.")
+
+		#check that url of photo begins with uploadcare source so that outsiders can't upload		
+		if self.url[0:20] != "https://ucarecdn.com" or self.baseurl[0:20] != "https://ucarecdn.com":
+			return self.error("Invalid image URL")
+
+		#uploadcare code, give back image colors
+		result = urlopen(self.baseurl+"-/preview/-/main_colors/3/")
+		data = result.read()
+		data = json.loads(data.decode('utf-8'))
+
+		main_colour = ""
+		if data["main_colors"] != []:
+			#main_colour = data["main_colors"][randint(0, 2)]
+			for colour in data["main_colors"][randint(0, 2)]:
+				main_colour = main_colour + str(colour) + ","
+			main_colour = main_colour[:-1]
+
+		
+		p = Photo(url=self.url, baseurl=self.baseurl, owner=self.user.username, likes=0, caption=self.caption, main_colour=main_colour)
+		p.save() 
+
+
+		return self.success("Image Uploaded")
 
