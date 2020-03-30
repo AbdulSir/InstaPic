@@ -66,6 +66,35 @@ class AjaxSignUp(Ajax):
         u.save()  #store user in the database
 
         return self.success("Account Created!")  #call the success function with the message input
+  
+class AjaxLogin(Ajax):
+
+	def validate(self): #function that allows us to validate the login
+		try:
+			self.password = self.args[0]["password"]  
+			self.email = self.args[0]["email"]
+		except Exception as e:                                            #if no email and no password then thtrow exception
+			return None, self.error("Malformed request, did not process.")
+
+		#chech if the characters and their number is valid, if not then return appropriate error meassages
+		if not re.match('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', self.email): 
+			return None, self.error("Invalid email syntax.")
+		if len(self.password) < 6 or len(self.password) > 32:
+			return None, self.error("Password must be between 6 and 32 characters long.")
+		if len(self.email) < 6 or len(self.email) > 140:
+			return None, self.error("Email must be between 6 and 32 characters long.")
+		
+		#check if email is in database
+		if not User.objects.filter(email=self.email).exists():
+			return None, self.error("Email or password is incorrect.")
+		
+		#check if password is in database by using the email to find the appropriate password
+		if not check_password(self.password, User.objects.filter(email=self.email)[0].password):
+			return None, self.error("Email or password is incorrect.")
+
+		u = User.objects.filter(email=self.email)[0] #extract appropriate user from the database
+
+		return u, self.success("User logged in!")  #return user with message
 
 
 
