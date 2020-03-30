@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.db.models import F
-from instapic.models import User, Photo
+from instapic.models import User, Photo, PhotoLikes, Followers, Comment
 from django.contrib.auth.hashers import make_password, check_password
 from urllib.request import urlopen
 from random import randint
@@ -66,7 +66,9 @@ class AjaxSignUp(Ajax):
         u.save()  #store user in the database
 
         return self.success("Account Created!")  #call the success function with the message input
-  
+
+
+
 class AjaxLogin(Ajax):
 
 	def validate(self): #function that allows us to validate the login
@@ -135,7 +137,57 @@ class AjaxSavePhoto(Ajax):
 
 
 		return self.success("Image Uploaded")
-	
+
+
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+
+class AjaxComment(Ajax): 
+
+
+	def validate(self):
+		try:
+			self.comment=self.args[0]["comment"]
+			self.postID=self.args[0]["postID"]
+		except Exception as e:
+			return None, self.error("Malformed request, did not process.")
+
+		if self.user == "NL":          #check if request came from logged in user
+			return self.error("Unauthorised request.")
+		
+		if len(self.comment) < 1 or len(self.comment) > 400:
+			return None, self.error("Comment must be between 1 and 400 characters long.")
+                
+		c = Comment(postID=self.postID, owner=self.user.username, comment=self.comment)
+		c.save()
+		return self.success("Comment Posted")
+
+class AjaxCommentPost(Ajax):
+	def validate(self):
+
+		try:
+			self.start = self.args[0]["start"]
+		except Exception as e:
+			return self.error("Malformed request, did not process.")
+
+		out=[]
+
+		for commentPost in Comment.objects.filter():
+			out.append({"commentText": commentPost.comment, "commentOwner": commentPost.owner, "commentLocation": commentPost.postID})
+		return self.items(json.dumps(out))	
+
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+#------------------------------------------------------------------------
+
+
 class AjaxPhotoFeed(Ajax):
 	def validate(self):
 
@@ -172,3 +224,87 @@ class AjaxPhotoFeed(Ajax):
 
 		return self.items(json.dumps(out))
 
+class AjaxProfileFeed(Ajax):
+	def validate(self):
+		try:
+			self.username = self.args[0]["username"]
+			self.start = self.args[0]["start"]
+		except Exception as e:
+			return self.error("Malformed request, did not process.")
+		out = []
+		for item in Photo.objects.filter(owner=self.username).order_by('-date_uploaded')[int(self.start):int(self.start)+3]:
+			if PhotoLikes.objects.filter(liker=self.username).filter(postid=item.id).exists():
+				liked = True
+			else:
+				liked = False
+			out.append({ "PostID": item.id, "URL": item.url, "Caption": item.caption, "Owner": item.owner, "Likes": item.likes, "DateUploaded": item.date_uploaded.strftime("%Y-%m-%d %H:%M:%S"), "Liked": liked, "MainColour": item.main_colour })
+
+		return self.items(json.dumps(out))
+
+
+
+#setting up a profile photo
+class AjaxSetProfilePic(Ajax):
+	def validate(self):
+		try:
+			self.url = self.args[0]["url"]
+			self.baseurl = self.args[0]["baseurl"]
+		except Exception as e:
+			return self.error("Malformed request, did not process.")
+
+		if self.user == "NL":
+			return self.error("Unauthorised request.")
+
+		if self.url[0:20] != "https://ucarecdn.com" or self.baseurl[0:20] != "https://ucarecdn.com":
+			return self.error("Invalid image URL")
+
+		u = User.objects.filter(username=self.user.username)[0]
+		u.profilepic=self.url
+		u.save()
+
+		return self.success("Profile Image Uploaded")
+
+#liking a photo
+class AjaxLikePhoto(Ajax):
+	def validate(self):
+		try:
+			self.postid = self.args[0]["id"]
+		except Exception as e:
+			return self.error("Malformed request, did not process.")
+
+		if self.user == "NL":
+			return self.error("Unauthorised request.")
+
+		if not PhotoLikes.objects.filter(liker=self.user.username, postid=self.postid).exists():
+			Photo.objects.filter(id=self.postid).update(likes=F('likes')+1)
+			like = PhotoLikes(postid=self.postid, liker=self.user.username)
+			like.save()
+		else:
+			Photo.objects.filter(id=self.postid).update(likes=F('likes')-1)
+			PhotoLikes.objects.filter(postid=self.postid, liker=self.user.username).delete()
+
+		return self.success("Photo Liked!")
+
+
+#follow a user
+class AjaxFollow(Ajax):
+	def validate(self):
+		try:
+			self.follower = self.args[0]["user"]
+		except Exception as e:
+			return self.error("Malformed request, did not process.")
+
+		if self.user == "NL":
+			return self.error("Unauthorised request.")
+
+		if self.user.username == self.follower:
+				return self.error("Can't follow yourself")
+
+		if not Followers.objects.filter(user=self.follower,follower=self.user.username).exists():
+			f = Followers(user=self.follower, follower=self.user.username).save()
+			following = True
+		else:
+			Followers.objects.filter(user=self.follower, follower=self.user.username).delete()
+			following = False
+		out = { "Following": following }
+		return self.items(json.dumps(out))
