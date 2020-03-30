@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<!--- LOGIN WINDOW -->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instapic</title>
+    <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/Login-Form-Clean.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
+</head>
+
+<body>
+    <div class="login-clean">
+        <form method="post">
+            {% csrf_token %}
+            <h2 class="sr-only">Login Form</h2>
+
+	    <!-- show logo of website -->
+            <div class="illustration">
+                <div class="illustration"><img src="{% static 'assets/img/logo1.jpg' %}" width="150" height="150"></div>
+
+	    <!-- input email -->
+            <div class="form-group" style="position:relative;">
+                <input class="form-control" id="email" type="email" name="email" placeholder="Email">
+            </div>
+
+            <!-- input password -->
+            <div class="form-group">
+                <input class="form-control" id="password" type="password" name="password" placeholder="Password">
+            </div>
+
+            <!-- Log in button -->
+            <div class="form-group">
+                <button class="btn btn-primary btn-block" id="go" type="submit">Log In</button>
+            </div>
+
+	<!-- Go to login if account already exists button -->
+            </div><a href="/sign-up" class="forgot">Don't have an account? Sign up here ...</a></form>
+	
+    </div>
