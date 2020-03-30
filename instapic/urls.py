@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^sign-up$', views.signup), 
     url(r'^ajax-sign-up$', views.ajaxsignup),   #signup page
     url(r'^ajax-login$', views.ajaxlogin),      #login page
-     url(r'^ajax-save-photo$', views.ajaxsavephoto), #upload and save photo
+    url(r'^ajax-save-photo$', views.ajaxsavephoto), #upload and save photo
+    url(r'^ajax-photo-feed$', views.ajaxphotofeed),  #feed page
     
 ]
