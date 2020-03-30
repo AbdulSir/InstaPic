@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 
@@ -108,4 +109,168 @@
 
 
     </div>
-    </thml>
+
+
+
+
+    <!--JavaScript and jQuery-->
+    <script src="{% static "assets/js/jquery.min.js" %}"></script>
+    <script src="{% static "assets/bootstrap/js/bootstrap.min.js" %}"></script>
+    <script src={% static "assets/js/django-ajax.js" %}></script>
+
+    <script src="https://ucarecdn.com/libs/widget/3.0.0/uploadcare.min.js" charset="utf-8"></script> <!-- include uploadcare script code -->
+    <script src="{% static "assets/js/upload-sys.js" %}"></script>
+    
+
+	<script type="text/javascript">
+
+
+var st=0;
+var buffer="string";
+function postComment() {
+
+$.ajax({                  
+                        type: "GET",
+                        url: "ajax-comment-post?&start="+st,
+                        processData: false,
+                        contentType: "application/json",
+                        data: '',
+                        success: function(r) {
+                                r = JSON.parse(r)
+                                for (var i = 0; i < r.length; i++) {  
+                                        $('#'+r[i].commentLocation+'').append('<p>'+r[i].commentOwner+': '+r[i].commentText+'</p>');
+
+                                				 }}
+
+});
+}
+
+////////////////////////-----------------------------------------------------------------------------------------------------------
+            var start = 0;
+            function getPosts() {
+                    $.ajax({                  //send ajax request 
+                        type: "GET",
+                        url: "ajax-photo-feed?&start="+start,
+                        processData: false,
+                        contentType: "application/json",
+                        data: '',
+                        success: function(r) {
+                                r = JSON.parse(r)
+                                for (var i = 0; i < r.length; i++) {  //loop through all the photos that a user has access to and post them along with caption and comments buttons and fields
+                                        r[i].URL += '-/quality/lightest/'  //modify quality of photo to make the displaying of images faster
+
+
+					var res1=r[i].DateUploaded.slice(0,4)
+					var res2=r[i].DateUploaded.slice(5,7)
+					var res3=r[i].DateUploaded.slice(8,10)
+					var res4=r[i].DateUploaded.slice(11,13)
+					var res5=r[i].DateUploaded.slice(14,16)
+					var res6=r[i].DateUploaded.slice(17,19)
+					var string=res1+res2+res3+res4+res5+res6    //should create a unique identifier for the post as long as nobody post at the very same time as another user
+
+                                        $('#loadposts').append('<div class="img-div"><div class="header"><img class="img-circle" data-caption="'+r[i].Caption+'" src="'+r[i].ProfilePic+'"><label>/'+r[i].Owner+' </label></div><img style="max-height: 500px; min-height: 300px; background-color: rgb('+r[i].MainColour+')" src="'+r[i].URL+'"><div class="header"><a href="javascript:void(0)" class="likephoto" data-liked='+ r[i].Liked +' data-postid="'+r[i].PostID+'" data-likes="'+r[i].Likes+'"><i class="fa fa-heart-o"></i></a></div><div class="more-section"><label>'+r[i].Likes+' Likes</label><p><strong>/'+r[i].Owner+' </strong>'+r[i].Caption+'</br><p id="date_uploaded">'+r[i].DateUploaded+'</p><p id="'+string+'"></p><input type="text" id="comment'+string+'" placeholder="comment"><button id="comment_button" onclick=commentFunction('+string+')>Submit</button></p></div></div>') 
+
+
+                                				 }  
+
+				//when a photo is liked
+                                $('.likephoto').each(function() {
+                                        if ($(this).data('liked') == true) {
+                                                $(this).css('color', '#440e96')
+                                                $('i', this).attr('class', 'fa fa-heart')
+                                        } else {
+                                                $(this).css('color', '#333')
+                                                $('i', this).attr('class', 'fa fa-heart-o')
+                                        }
+                                        $(this).off('click')
+                                        $(this).click(function() {
+                                                var but = $(this)
+                                                var buti = $('i', this)
+                                                $.ajax({
+                                                    type: "GET",
+                                                    url: "ajax-like-photo?id="+$(this).data('postid'),
+                                                    processData: false,
+                                                    contentType: "application/json",
+                                                    data: '',
+                                                    success: function(r) {
+                                                            if (JSON.parse(r).Status == 'Success') {
+
+                                                        if (but.data('liked') == false) {
+                                                                but.data('liked',true)
+                                                                but.css('color', '#440e96')
+                                                                buti.attr('class', 'fa fa-heart')
+                                                        } else {
+                                                                but.data('liked',false)
+                                                                but.css('color', '#333')
+                                                                buti.attr('class', 'fa fa-heart-o')
+                                                        }
+                                                    }
+                                                    },
+                                                    error: function(r) {
+
+                                                    }
+                                            })
+                                        })
+                                })
+                        },
+                        error: function(r) {
+
+                        }
+                });
+                start += 3;
+            }
+            $(document).ready(function() {
+                    $(window).scroll()  //when window is scrolled down, getPosts() ftn get called
+                    getPosts();
+		    //postComment();   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<=============================================
+            })
+            var working = false;
+            $(window).scroll(function() {
+		//postComment();
+                 if ($(this).scrollTop() + 1 >= $('body').height() - $(window).height()) {
+                   if (working == false) {
+                           working = true;
+                   getPosts();
+                   postComment();  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<=============================================
+               setTimeout(function() {
+                working = false;
+                }, 4000)
+                }
+           }
+
+           });
+
+/*
+$(document).ready(function() {
+		    postComment();   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<=============================================
+            });
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------------------//
+function commentFunction(postNumber) {
+
+$(document).ready(function() { //when document is ready
+	
+        //$('#comment_button').click(function() {   //if go button is clicked
+        $.post("ajax-post_comment",       //the ajax-sign-up page will get the following
+    {
+        postID: postNumber,
+        comment: $('#comment'+postNumber+'').val()
+    });
+});
+
+	
+}
+
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
