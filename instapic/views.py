@@ -17,3 +17,12 @@ def ajaxsignup(request):
 def signup(request):
     context = {}
     return render(request, 'sign-up.html', context)
+
+#logging in using ajax
+def ajaxlogin(request):
+	ajax = AjaxLogin(request.POST) #create instance of login and take post request
+	logged_in_user, output = ajax.validate() #if validated, store output into variables
+	if logged_in_user != None:  #if variable is not empty
+	    login(request, logged_in_user) #use django method to login
+	context = {'ajax_output': output} #store variables to be put into template
+	return render(request, 'ajax.html', context)
