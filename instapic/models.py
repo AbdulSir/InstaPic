@@ -16,3 +16,18 @@ class Photo(models.Model):
 	likes = models.IntegerField()
 	caption = models.CharField(max_length=140, default="")
 	main_colour = models.CharField(max_length=15, default="")
+
+class PhotoLikes(models.Model):
+	postid = models.IntegerField()
+	liker = models.CharField(max_length=20) 
+
+class Followers(models.Model):
+	user = models.CharField(max_length=20, default="")
+	follower = models.CharField(max_length=20, default="")
+
+
+class Comment(models.Model):
+	postID=models.CharField(max_length=255)
+	owner = models.CharField(max_length=20)
+	comment = models.CharField(max_length=400)
+
