@@ -135,4 +135,40 @@ class AjaxSavePhoto(Ajax):
 
 
 		return self.success("Image Uploaded")
+	
+class AjaxPhotoFeed(Ajax):
+	def validate(self):
+
+		try:
+			self.start = self.args[0]["start"]
+		except Exception as e:
+			return self.error("Malformed request, did not process.")
+
+		out = []  #list of out
+		followerslist = [self.user.username]  #list of followers
+		profilepics = {}  #dictionary of profile pics
+
+#---------------------------
+		for follower in Followers.objects.filter(follower=self.user.username): #loop through all the followers of user  
+			followerslist.append(follower.user)				#input followers into array
+#---------------------------
+
+#---------------------------
+		for user in User.objects.filter(username__in=followerslist):   #loop through all users that are in follower list
+			profilepics[user.username] = user.profilepic	       #for that user in the dictionary add that user profile pic
+			if user.profilepic == "":     #if the users profile pic is empty 
+				profilepics[user.username] = "static/assets/img/default.png"  #then use default
+#---------------------------
+
+#---------------------------
+		for item in Photo.objects.filter(owner__in=followerslist).order_by('-date_uploaded')[int(self.start):int(self.start)+3]:  #loop through all the photos that have owner in follower list in order of their uploaded date
+			if PhotoLikes.objects.filter(liker=self.user.username).filter(postid=item.id).exists():  #if a photo like done by the user for that  photo exists
+				liked = True #set variable liked to true
+			else:
+				liked = False  #set variable liked to false
+
+			out.append({ "PostID": item.id, "URL": item.url, "Caption": item.caption, "Owner": item.owner, "Likes": item.likes, "DateUploaded": item.date_uploaded.strftime("%Y-%m-%d %H:%M:%S"), "Liked": liked, "ProfilePic": profilepics[item.owner]+"", "MainColour": item.main_colour }) #append to out list the photos attributes as well as the owner profile pic
+#---------------------------
+
+		return self.items(json.dumps(out))
 
