@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 
@@ -44,4 +45,31 @@
 	     <!-- Go to login if account already exists button -->
             </div><a href="/" class="forgot">Already got an account? Login here ...</a></form>
     </div>
-    </html>
+    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src={% static "assets/js/django-ajax.js" %}></script>
+    
+    <script type="text/javascript"> 
+        $(document).ready(function() { //when document is ready
+        $('#go').click(function() {   //if go button is clicked
+        $.post("ajax-sign-up",       //the ajax-sign-up page will get the following
+    {
+        username: $("#username").val(),
+        email: $("#email").val(),
+        password: $("#password").val()
+    },
+    function(data, status){          //if sign up is successful 
+	if (JSON.parse(data).Status == 'Success') {
+		window.location = '/';    //go to index page
+	} else {
+		$('#errors').html("<span>" + JSON.parse(data).Message + "</span>")
+		$('#errors').css('display', 'block')
+	}
+    });
+        return false;
+        })
+})
+    </script>
+</body>
+
+</html>
