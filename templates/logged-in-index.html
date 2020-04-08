@@ -1,0 +1,276 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instapic</title>
+    <link rel="stylesheet" href="{% static "assets/bootstrap/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "assets/fonts/font-awesome.min.css" %}">
+    <link rel="stylesheet" href="{% static "assets/css/Login-Form-Clean.css" %}">
+    <link rel="stylesheet" href="{% static "assets/css/styles.css" %}">
+    <link rel="stylesheet" href="{% static "assets/fonts/ionicons.min.css" %}">
+</head>
+
+<body>
+        <div class="overlay"></div>
+        
+        <!-- Header section of Image Feed-->
+        <div class="container-fluid header-top">
+            <div class="col-md-12" style="padding:0px;">
+		    <!--MENU -->
+		    
+		    <!--Logo -->
+                    <div class="top-menu-logo"><a href="/"><img src="{% static 'assets/img/logo1.jpg' %}" class="center-block" style="height:100px;width:150px;margin-top:10px;margin-bottom:10px;"></a>
+                    <div class="menu-buttons">
+                         
+                         <!--Upload button using uploadcare -->
+                        <button class="btn btn-default" type="button" id="upload-but"><i class="glyphicon glyphicon-upload"></i></button>
+                         
+                         <!--Profile button -->
+                        <a href="/{{ user.username }}"><button class="btn btn-default" type="button" id="profile-but"><i class="glyphicon glyphicon-user"></i></button></a>
+                         
+                         <!--Log out button -->			
+			<form method="POST" action="/logout/">
+				{% csrf_token %}
+				<input type="submit" value="Logout">
+			</form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+	      <!-- UPLOADING AND POSTING IMAGE SECTION (TUTORIAL CODE) -->
+    <div class="container img-container">
+            <div id="upload-div">
+                    <div class="img-div" style="position: relative; margin-bottom: 0px">
+                        <div class="header"><img class="img-circle" src="{{ ProfilePic }}">
+                            <label>/{{ user.username }}</label>
+                        </div>
+                        <div class="empty-upload-container">
+                                <div style="width: 100%; height: 300px">
+                            <!-- <h1>Upload an Image</h1> -->
+                            <h1><div class="uploader-grey-button image-preview">
+              <input type="hidden" role="uploadcare-uploader" data-clearable="" data-images-only="">
+      		        </div></h1>
+                    </div>
+                    </div>
+                    <div id="caption-div" class="upload-photo-options">
+                        <h1>Add a caption</h1>
+                        <input type="text" maxlength="140" style="width:100%;border:none;font-size:16px;height:48px;outline:none;padding:0px 10px;" id="captionbox" placeholder="Type your caption here ...">
+                    </div>
+                    <div id="filter-div" class="upload-photo-options" style="height: 150px">
+                        <h1>Choose a Filter</h1>
+                        <div style="width:100%;overflow-x:scroll;">
+                                <div style="width:100%;overflow-x:scroll;">
+                                    <div style="height:100px;overflow:hidden;min-width:160%;">
+                                        <div class="effect"><img src="" class="grayscale">
+                                            <label>Grayscale </label>
+                                        </div>
+                                        <div class="effect"><img src="" class="invert">
+                                            <label>Invert </label>
+                                        </div>
+                                        <div class="effect"><img src="" class="blur">
+                                            <label>Blur </label>
+                                        </div>
+                                        <div class="effect"><img src="" class="flip">
+                                            <label>Flip </label>
+                                        </div>
+                                        <div class="effect"><img src="" class="mirror">
+                                            <label>Mirror </label>
+                                        </div>
+                                        <div class="effect"><img src="" class="sharp">
+                                            <label>Sharp </label>
+                                        </div>
+                                        <div class="effect"><img src="" class="enhance">
+                                            <label>Enhance </label>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="upload-options-disabled"></div>
+                    <div class="hidden-xs more-section"><a href="javascript:void(0)" id="caption-but" class="upload-options caption-but"><i class="fa fa-comments-o"></i> Add a caption</a><a href="javascript:void(0)" id="filter-but" class="upload-options filter-but"><i class="icon ion-android-options"></i> Add a filter</a>
+                        <a
+                        href="javascript:void(0)" id="rotate-but" class="upload-options rotate-but"><i class="fa fa-rotate-right"></i> Rotate photo</a>
+                            <button class="save-photo btn btn-primary btn-block upload-button" type="submit">Save Photo</button>
+                    </div>
+                    <div class="hidden-sm hidden-md hidden-lg more-section"><a href="javascript:void(0)" class="upload-options small caption-but"><i class="fa fa-comments-o"></i></a><a href="javascript:void(0)" class="upload-options small filter-but" style="padding:10px;"><i class="icon ion-android-options"></i></a><a href="javascript:void(0)" class="upload-options small rotate-but"
+                        style="padding:13px;"><i class="fa fa-rotate-right"></i></a>
+                        <button class="save-photo btn btn-primary btn-block upload-button" type="submit">Save</button>
+                    </div>
+                    </div>
+            </div>
+
+            <!-- Images are appended here using getPosts() function -->       
+            <div id="loadposts"></div>
+
+
+    </div>
+
+
+
+
+    <!--JavaScript and jQuery-->
+    <script src="{% static "assets/js/jquery.min.js" %}"></script>
+    <script src="{% static "assets/bootstrap/js/bootstrap.min.js" %}"></script>
+    <script src={% static "assets/js/django-ajax.js" %}></script>
+
+    <script src="https://ucarecdn.com/libs/widget/3.0.0/uploadcare.min.js" charset="utf-8"></script> <!-- include uploadcare script code -->
+    <script src="{% static "assets/js/upload-sys.js" %}"></script>
+    
+
+	<script type="text/javascript">
+
+
+var st=0;
+var buffer="string";
+function postComment() {
+
+$.ajax({                  
+                        type: "GET",
+                        url: "ajax-comment-post?&start="+st,
+                        processData: false,
+                        contentType: "application/json",
+                        data: '',
+                        success: function(r) {
+                                r = JSON.parse(r)
+                                for (var i = 0; i < r.length; i++) {  
+                                        $('#'+r[i].commentLocation+'').append('<p>'+r[i].commentOwner+': '+r[i].commentText+'</p>');
+
+                                				 }}
+
+});
+}
+
+////////////////////////-----------------------------------------------------------------------------------------------------------
+            var start = 0;
+            function getPosts() {
+                    $.ajax({                  //send ajax request 
+                        type: "GET",
+                        url: "ajax-photo-feed?&start="+start,
+                        processData: false,
+                        contentType: "application/json",
+                        data: '',
+                        success: function(r) {
+                                r = JSON.parse(r)
+                                for (var i = 0; i < r.length; i++) {  //loop through all the photos that a user has access to and post them along with caption and comments buttons and fields
+                                        r[i].URL += '-/quality/lightest/'  //modify quality of photo to make the displaying of images faster
+
+
+					var res1=r[i].DateUploaded.slice(0,4)
+					var res2=r[i].DateUploaded.slice(5,7)
+					var res3=r[i].DateUploaded.slice(8,10)
+					var res4=r[i].DateUploaded.slice(11,13)
+					var res5=r[i].DateUploaded.slice(14,16)
+					var res6=r[i].DateUploaded.slice(17,19)
+					var string=res1+res2+res3+res4+res5+res6    //should create a unique identifier for the post as long as nobody post at the very same time as another user
+
+                                        $('#loadposts').append('<div class="img-div"><div class="header"><img class="img-circle" data-caption="'+r[i].Caption+'" src="'+r[i].ProfilePic+'"><label>/'+r[i].Owner+' </label></div><img style="max-height: 500px; min-height: 300px; background-color: rgb('+r[i].MainColour+')" src="'+r[i].URL+'"><div class="header"><a href="javascript:void(0)" class="likephoto" data-liked='+ r[i].Liked +' data-postid="'+r[i].PostID+'" data-likes="'+r[i].Likes+'"><i class="fa fa-heart-o"></i></a></div><div class="more-section"><label>'+r[i].Likes+' Likes</label><p><strong>/'+r[i].Owner+' </strong>'+r[i].Caption+'</br><p id="date_uploaded">'+r[i].DateUploaded+'</p><p id="'+string+'"></p><input type="text" id="comment'+string+'" placeholder="comment"><button id="comment_button" onclick=commentFunction('+string+')>Submit</button></p></div></div>') 
+
+
+                                				 }  
+
+				//when a photo is liked
+                                $('.likephoto').each(function() {
+                                        if ($(this).data('liked') == true) {
+                                                $(this).css('color', '#440e96')
+                                                $('i', this).attr('class', 'fa fa-heart')
+                                        } else {
+                                                $(this).css('color', '#333')
+                                                $('i', this).attr('class', 'fa fa-heart-o')
+                                        }
+                                        $(this).off('click')
+                                        $(this).click(function() {
+                                                var but = $(this)
+                                                var buti = $('i', this)
+                                                $.ajax({
+                                                    type: "GET",
+                                                    url: "ajax-like-photo?id="+$(this).data('postid'),
+                                                    processData: false,
+                                                    contentType: "application/json",
+                                                    data: '',
+                                                    success: function(r) {
+                                                            if (JSON.parse(r).Status == 'Success') {
+
+                                                        if (but.data('liked') == false) {
+                                                                but.data('liked',true)
+                                                                but.css('color', '#440e96')
+                                                                buti.attr('class', 'fa fa-heart')
+                                                        } else {
+                                                                but.data('liked',false)
+                                                                but.css('color', '#333')
+                                                                buti.attr('class', 'fa fa-heart-o')
+                                                        }
+                                                    }
+                                                    },
+                                                    error: function(r) {
+
+                                                    }
+                                            })
+                                        })
+                                })
+                        },
+                        error: function(r) {
+
+                        }
+                });
+                start += 3;
+            }
+            $(document).ready(function() {
+                    $(window).scroll()  //when window is scrolled down, getPosts() ftn get called
+                    getPosts();
+		    //postComment();   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<=============================================
+            })
+            var working = false;
+            $(window).scroll(function() {
+		//postComment();
+                 if ($(this).scrollTop() + 1 >= $('body').height() - $(window).height()) {
+                   if (working == false) {
+                           working = true;
+                   getPosts();
+                   postComment();  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<=============================================
+               setTimeout(function() {
+                working = false;
+                }, 4000)
+                }
+           }
+
+           });
+
+/*
+$(document).ready(function() {
+		    postComment();   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<=============================================
+            });
+
+*/
+
+
+//---------------------------------------------------------------------------------------------------------------------//
+function commentFunction(postNumber) {
+
+$(document).ready(function() { //when document is ready
+	
+        //$('#comment_button').click(function() {   //if go button is clicked
+        $.post("ajax-post_comment",       //the ajax-sign-up page will get the following
+    {
+        postID: postNumber,
+        comment: $('#comment'+postNumber+'').val()
+    });
+});
+
+	
+}
+
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
